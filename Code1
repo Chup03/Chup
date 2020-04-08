@@ -1,0 +1,137 @@
+// savingbinarytree.cpp : This file contains the 'main' function. Program execution begins and ends there.
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <fstream>
+using namespace std;
+struct node {
+	node* lchild, * rchild;
+	string val;
+};
+void readanode(node*& x, ifstream& f);
+//we are passing the address of x (&x) and x is a pointer to a node
+void writeanode(node* x);
+void addanode(node*& x, string v); //add v to tree in place
+void playthegame(node*& x);
+int main(void) {
+	node* t = NULL;
+	ifstream filin;
+	filin.open("C:\\Users\\Chup\\Desktop\\20Questions");
+	readanode(t, filin);
+	string NGYN;
+	NGYN = "Y";
+	while (NGYN == "Y") {
+		playthegame(t);
+		cout << "another game(Y or N) ";
+		cin >> NGYN;
+	}
+	return 0;
+}
+void readanode(node*& x, ifstream& f) {
+	string st, lv, mid;
+	getline(f, st);
+	lv = st[0];
+	st.erase(0, 2);  // remove lv and comma
+	mid = st.substr(0, st.find(","));
+	st.erase(0, st.find(",") + 1);
+	// st is now the rv
+	cout << mid << " " << lv << " " << st << endl;
+	x = new node;
+	x->val = mid;  // CHANGED.
+	if (lv == "Y") //
+		readanode(x->lchild, f);
+	// read the left subtree and connect it.
+	else
+		x->lchild = NULL;
+	if (st == "Y") // go right
+		readanode(x->rchild, f);
+	else
+		x->rchild = NULL;
+
+}
+void writeanode(node* x) {
+
+
+          	//write in inroder  (val in node is inbetween the subtrees)
+          	// at any node,write the left subtree
+	          // write the value in the node
+	          // write the right subtree
+            
+            
+	if (x->lchild != NULL)
+		writeanode(x->lchild);
+	cout << x->val << endl;
+	if (x->rchild != NULL)
+		writeanode(x->rchild);
+}
+void addanode(node*& x, string v) {
+	node* t2;
+	if (x->val == v)
+		cout << "value inm aleady\n";
+	else if (x->val > v) // go left
+		if (x->lchild == NULL) {
+			x->lchild = new node;
+			t2 = x->lchild; // t2 points to new node
+			t2->val = v;
+			t2->rchild = NULL;
+			t2->lchild = NULL;
+		}
+		else
+			addanode(x->lchild, v);
+	else // go right
+		if (x->rchild == NULL) {
+			x->rchild = new node;
+			t2 = x->rchild; // t2 points to new node
+			t2->val = v;
+			t2->rchild = NULL;
+			t2->lchild = NULL;
+		}
+		else
+			addanode(x->rchild, v);
+}
+void playthegame(node*& x) {
+	cout << "Think of an object found in the house\n";
+	node* temp1, * temp2;
+	temp1 = x;
+	char YN;
+	while (temp1->lchild != NULL || temp1->rchild != NULL) {
+		cout << temp1->val << endl;
+		cout << "Y or N: ";
+		cin >> YN;
+		if (YN == 'Y') {
+			temp1 = temp1->lchild;
+		}
+		else {
+			temp1 = temp1->rchild;
+		}
+	}
+	//temp is a leaf
+	cout << temp1->val;
+	cout << "Y or N: ";
+	cin >> YN;
+	if (YN == 'Y') {
+		cout << "I win.\n";
+	}
+	else {
+		cout << "What is it?\n";
+		string newitem;
+		getline(cin, newitem);
+		getline(cin, newitem);
+		cout <<
+			"give  me a Y/N question in the form 'Is it...' that has ans Y for your item and N for my guess\n";
+		string newquest;
+		getline(cin, newquest, '\n');
+		node* newy, * newn;
+		newy = new node;
+		newy->val = "Is it a " + newitem;
+		newy->lchild = NULL;
+		newy->rchild = NULL;
+		temp1->lchild = newy;
+		newn = new node;
+		newn->val = temp1->val;
+		newn->lchild = NULL;
+		newn->rchild = NULL;
+		temp1->rchild = newy;
+		temp1->val = newquest;
+	}
+}
